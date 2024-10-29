@@ -1,0 +1,27 @@
+name: QualityArmoryVehicles2
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/QAV2.yml'
+  schedule:
+    - cron: '0 */12 * * *'  # Chạy mỗi 12 tiếng
+  workflow_dispatch:  # Cho phép chạy thủ công
+
+jobs:
+  QAV2:
+    uses: HSGamer/ConstructProjects/.github/workflows/gradle-build.yml@main
+    with:
+      repository: "ZombieStriker/QualityArmoryVehicles2"
+      target: "build/libs/*.jar"
+      name: "QualityArmoryVehicles2"
+      java: 8  # QAV2 sử dụng Java 8 để tương thích tốt hơn
+      distribution: "temurin"
+      commands: |
+        chmod +x ./gradlew
+        chmod +x ./gradle/wrapper/gradle-wrapper.jar
+      tasks: "clean shadowJar"  # Sử dụng shadowJar vì project này có thể cần shade dependencies
+      readonly: true
+      cache: "qav2"
+      version: "6.7"  # Sử dụng Gradle 6.7 vì project này là project cũ
