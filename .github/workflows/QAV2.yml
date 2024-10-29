@@ -6,8 +6,8 @@ on:
     paths:
       - '.github/workflows/QAV2.yml'
   schedule:
-    - cron: '0 */12 * * *'  # Chạy mỗi 12 tiếng
-  workflow_dispatch:  # Cho phép chạy thủ công
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
 
 jobs:
   QAV2:
@@ -16,12 +16,16 @@ jobs:
       repository: "ZombieStriker/QualityArmoryVehicles2"
       target: "build/libs/*.jar"
       name: "QualityArmoryVehicles2"
-      java: 8  # QAV2 sử dụng Java 8 để tương thích tốt hơn
+      java: 8
       distribution: "temurin"
       commands: |
         chmod +x ./gradlew
         chmod +x ./gradle/wrapper/gradle-wrapper.jar
-      tasks: "clean shadowJar"  # Sử dụng shadowJar vì project này có thể cần shade dependencies
+        # Cập nhật version của shadow plugin trong build.gradle.kts
+        sed -i 's/com.github.johnrengelman.shadow\" version \"8.1.1/com.github.johnrengelman.shadow\" version \"7.1.2/g' build.gradle.kts
+        # Refresh dependencies
+        ./gradlew --refresh-dependencies
+      tasks: "clean shadowJar"
       readonly: true
       cache: "qav2"
-      version: "6.7"  # Sử dụng Gradle 6.7 vì project này là project cũ
+      version: "8.0"  # Nâng lên Gradle 8.0 để phù hợp với Shadow plugin
