@@ -21,8 +21,25 @@ jobs:
       commands: |
         chmod +x ./gradlew
         chmod +x ./gradle/wrapper/gradle-wrapper.jar
-        ./gradlew --refresh-dependencies --stacktrace
-      tasks: "clean build shadowJar --stacktrace"
-      readonly: true
+        # Đảm bảo kết nối với Maven repositories
+        export MAVEN_OPTS="-Xmx2048m"
+        export GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000"
+        ./gradlew --refresh-dependencies --info --stacktrace --configure-on-demand properties
+      tasks: "clean build shadowJar --stacktrace --info"
+      readonly: false
       cache: "qav2"
-      version: "wrapper"  # Sử dụng gradle wrapper của repo gốc
+      version: "wrapper"
+      dir: "."
+      os: "ubuntu-latest"
+    env:
+      # Thêm các maven repositories vào environment
+      MAVEN_REPO_URL: |
+        https://hub.spigotmc.org/nexus/content/repositories/snapshots/
+        https://oss.sonatype.org/content/repositories/snapshots/
+        https://repo.dmulloy2.net/repository/public/
+        https://jitpack.io
+        https://maven.enginehub.org/repo/
+      MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      MAVEN_OPTS: "-Xmx2048m"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2048m"
