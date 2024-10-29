@@ -10,115 +10,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Phương án 1: Gradle 8.x với Shadow 8.1.1
-  QAV2-Modern:
+  QAV2:
     uses: HSGamer/ConstructProjects/.github/workflows/gradle-build.yml@main
     with:
       repository: "ZombieStriker/QualityArmoryVehicles2"
       target: "build/libs/*.jar"
-      name: "QualityArmoryVehicles2-Modern"
+      name: "QualityArmoryVehicles2"
       java: 8
       distribution: "temurin"
       commands: |
         chmod +x ./gradlew
-        # Tạo build.gradle.kts
-        echo "plugins { java; id(\"com.github.johnrengelman.shadow\") version \"8.1.1\" }" > build.gradle.kts
-        echo "repositories { mavenCentral(); maven { url = uri(\"https://hub.spigotmc.org/nexus/content/repositories/snapshots/\") }; maven { url = uri(\"https://oss.sonatype.org/content/groups/public/\") } }" >> build.gradle.kts
-        echo "dependencies { compileOnly(\"org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT\") }" >> build.gradle.kts
-        ./gradlew --refresh-dependencies
-      tasks: "clean shadowJar -x test"
+        chmod +x ./gradle/wrapper/gradle-wrapper.jar
+        ./gradlew --refresh-dependencies --stacktrace
+      tasks: "clean build shadowJar --stacktrace"
       readonly: true
-      cache: "qav2-modern"
-      version: "8.5"
-
-  # Phương án 2: Gradle 7.x với Shadow 6.1.0 và build.gradle thông thường
-  QAV2-Legacy:
-    if: ${{ failure() }}  # Chạy nếu phương án 1 thất bại 
-    uses: HSGamer/ConstructProjects/.github/workflows/gradle-build.yml@main
-    with:
-      repository: "ZombieStriker/QualityArmoryVehicles2"
-      target: "build/libs/*.jar"
-      name: "QualityArmoryVehicles2-Legacy"
-      java: 8
-      distribution: "temurin"
-      commands: |
-        chmod +x ./gradlew
-        # Tạo build.gradle
-        echo 'plugins {' > build.gradle
-        echo '    id "java"' >> build.gradle
-        echo '    id "com.github.johnrengelman.shadow" version "6.1.0"' >> build.gradle
-        echo '}' >> build.gradle
-        echo 'repositories {' >> build.gradle
-        echo '    mavenCentral()' >> build.gradle
-        echo '    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }' >> build.gradle
-        echo '    maven { url "https://oss.sonatype.org/content/groups/public/" }' >> build.gradle
-        echo '}' >> build.gradle
-        echo 'dependencies {' >> build.gradle
-        echo '    compileOnly "org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT"' >> build.gradle
-        echo '}' >> build.gradle
-        ./gradlew --refresh-dependencies
-      tasks: "clean shadowJar -x test"
-      readonly: true
-      cache: "qav2-legacy"
-      version: "7.0"
-
-  # Phương án 3: Gradle cũ nhất với setup cơ bản nhất
-  QAV2-Basic:
-    if: ${{ failure() }}  # Chạy nếu phương án 2 thất bại
-    uses: HSGamer/ConstructProjects/.github/workflows/gradle-build.yml@main
-    with:
-      repository: "ZombieStriker/QualityArmoryVehicles2"
-      target: "build/libs/*.jar"
-      name: "QualityArmoryVehicles2-Basic"
-      java: 8
-      distribution: "temurin"
-      commands: |
-        chmod +x ./gradlew
-        # Tạo build.gradle đơn giản nhất
-        echo 'apply plugin: "java"' > build.gradle
-        echo 'repositories {' >> build.gradle
-        echo '    mavenCentral()' >> build.gradle
-        echo '    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }' >> build.gradle
-        echo '}' >> build.gradle
-        echo 'dependencies {' >> build.gradle
-        echo '    compileOnly "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT"' >> build.gradle
-        echo '}' >> build.gradle
-        ./gradlew --refresh-dependencies
-      tasks: "clean build -x test"
-      readonly: true
-      cache: "qav2-basic"
-      version: "6.7"
-
-  # Phương án 4: Maven fallback nếu Gradle hoàn toàn thất bại
-  QAV2-Maven-Fallback:
-    if: ${{ failure() }}  # Chạy nếu tất cả phương án Gradle thất bại
-    uses: HSGamer/ConstructProjects/.github/workflows/maven-build.yml@main
-    with:
-      repository: "ZombieStriker/QualityArmoryVehicles2"
-      target: "target/*.jar"
-      name: "QualityArmoryVehicles2-Maven"
-      java: 8
-      distribution: "temurin"
-      commands: |
-        # Tạo pom.xml cơ bản
-        echo '<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">' > pom.xml
-        echo '    <modelVersion>4.0.0</modelVersion>' >> pom.xml
-        echo '    <groupId>me.zombie_striker</groupId>' >> pom.xml
-        echo '    <artifactId>qav</artifactId>' >> pom.xml
-        echo '    <version>1.0-SNAPSHOT</version>' >> pom.xml
-        echo '    <repositories>' >> pom.xml
-        echo '        <repository>' >> pom.xml
-        echo '            <id>spigot-repo</id>' >> pom.xml
-        echo '            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>' >> pom.xml
-        echo '        </repository>' >> pom.xml
-        echo '    </repositories>' >> pom.xml
-        echo '    <dependencies>' >> pom.xml
-        echo '        <dependency>' >> pom.xml
-        echo '            <groupId>org.spigotmc</groupId>' >> pom.xml
-        echo '            <artifactId>spigot-api</artifactId>' >> pom.xml
-        echo '            <version>1.19.4-R0.1-SNAPSHOT</version>' >> pom.xml
-        echo '            <scope>provided</scope>' >> pom.xml
-        echo '        </dependency>' >> pom.xml
-        echo '    </dependencies>' >> pom.xml
-        echo '</project>' >> pom.xml
-      tasks: "clean package -DskipTests"
+      cache: "qav2"
+      version: "wrapper"  # Sử dụng gradle wrapper của repo gốc
