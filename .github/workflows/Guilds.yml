@@ -1,0 +1,25 @@
+name: Guilds
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/Guilds.yml'
+  schedule:
+    - cron: '0 */12 * * *'  # Chạy mỗi 12 tiếng
+  workflow_dispatch:  # Cho phép chạy thủ công
+
+jobs:
+  Guilds:
+    uses: HSGamer/ConstructProjects/.github/workflows/gradle-build.yml@main
+    with:
+      repository: "guilds-plugin/Guilds"
+      target: "build/libs/*.jar"  # Target mặc định cho Gradle builds
+      name: "Guilds"
+      java: 17  # Sử dụng Java 17 vì đây là plugin hiện đại
+      distribution: "temurin"  # Sử dụng Eclipse Temurin distribution
+      tasks: "clean build"  # Clean trước khi build để đảm bảo build mới
+      readonly: true  # Chế độ read-only để tối ưu cache
+      cache: "guilds"  # Cache key riêng cho Guilds
+      commands: |
+        chmod +x ./gradlew  # Đảm bảo gradlew có quyền thực thi
