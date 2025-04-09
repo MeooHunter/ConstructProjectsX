@@ -1,0 +1,24 @@
+name: Maxlego08
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/Maxlego08.yml'
+  schedule:
+    - cron: '0 */12 * * *'
+
+jobs:
+  zEssentials:
+    uses: maiminhdung/ConstructProjects/.github/workflows/gradle-build.yml@main
+    with:
+      repository: "Maxlego08/zEssentials"
+      name: "zEssentials"
+      java: 21
+      target: "target/*"
+  zShop:
+    uses: maiminhdung/ConstructProjects/.github/workflows/maven-build.yml@main
+    with:
+      repository: "XingLingQAQ/zShop"
+      name: "zShop"
+      java: 17
