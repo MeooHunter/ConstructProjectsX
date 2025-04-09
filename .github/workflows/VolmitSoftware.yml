@@ -10,74 +10,23 @@ on:
 
 jobs:
   Iris:
-    uses: HSGamer/ConstructProjects/.github/workflows/gradle-build.yml@main
+    uses: maiminhdung/ConstructProjects/.github/workflows/gradle-build.yml@main
     with:
       repository: "VolmitSoftware/Iris"
       name: "Iris"
-      java: "21"
-      distribution: "temurin"
-      tasks: "iris --no-daemon"
+      java: |
+        17
+        21
       commands: |
         curl -o BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+        JAVA_HOME_17="JAVA_HOME_17_${RUNNER_ARCH}"
         JAVA_HOME_21="JAVA_HOME_21_${RUNNER_ARCH}"
-        "${!JAVA_HOME_21}"/bin/java -jar BuildTools.jar --rev 1.19.2 --compile craftbukkit --remapped
-        "${!JAVA_HOME_21}"/bin/java -jar BuildTools.jar --rev 1.19.3 --compile craftbukkit --remapped
-        "${!JAVA_HOME_21}"/bin/java -jar BuildTools.jar --rev 1.19.4 --compile craftbukkit --remapped
-        "${!JAVA_HOME_21}"/bin/java -jar BuildTools.jar --rev 1.20.1 --compile craftbukkit --remapped
-        "${!JAVA_HOME_21}"/bin/java -jar BuildTools.jar --rev 1.20.2 --compile craftbukkit --remapped
-        "${!JAVA_HOME_21}"/bin/java -jar BuildTools.jar --rev 1.20.4 --compile craftbukkit --remapped
-
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: gradle
-
-    - name: Validate Gradle wrapper
-      uses: gradle/wrapper-validation-action@v1
-
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        gradle-version: wrapper
-        cache-read-only: false
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Build with Gradle
-      run: ./gradlew iris --no-daemon
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: Iris-${{ github.sha }}
-        path: build/libs/*.jar
-        retention-days: 30
-        if-no-files-found: error
-
-    - name: Generate build report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-report-${{ github.sha }}
-        path: |
-          build/reports/
-          build/test-results/
-        retention-days: 14
+        "${!JAVA_HOME_17}"/bin/java -jar BuildTools.jar --rev 1.19.2 --compile craftbukkit --remapped
+        "${!JAVA_HOME_17}"/bin/java -jar BuildTools.jar --rev 1.19.3 --compile craftbukkit --remapped
+        "${!JAVA_HOME_17}"/bin/java -jar BuildTools.jar --rev 1.19.4 --compile craftbukkit --remapped
+        "${!JAVA_HOME_17}"/bin/java -jar BuildTools.jar --rev 1.20.1 --compile craftbukkit --remapped
+        "${!JAVA_HOME_17}"/bin/java -jar BuildTools.jar --rev 1.20.2 --compile craftbukkit --remapped
+        "${!JAVA_HOME_17}"/bin/java -jar BuildTools.jar --rev 1.20.4 --compile craftbukkit --remapped
   Adapt:
     uses: HSGamer/ConstructProjects/.github/workflows/gradle-build.yml@main
     with:
